@@ -1,0 +1,25 @@
+sample	region	population	truth_id	source	url	group
+NA12878	EUR	CEU	NA12878	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239334/NA12878.final.cram	trio
+NA12891	EUR	CEU	NA12891	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/additional_698_related/data/ERR3989341/NA12891.final.cram	trio
+NA12892	EUR	CEU	NA12892	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/additional_698_related/data/ERR3989342/NA12892.final.cram	trio
+HG001_GIAB	EUR	CEU	NA12878	GIAB 300x HiSeq, downsampled to 30x	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/data/NA12878/NIST_NA12878_HG001_HiSeq_300x/NHGRI_Illumina300X_novoalign_bams/HG001.GRCh38_full_plus_hs38d1_analysis_set_minus_alts.300x.bam	trio
+HG03196	AFR	ESN	HG03196	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3242619/HG03196.final.cram	population
+NA19399	AFR	LWK	NA19399	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239748/NA19399.final.cram	population
+HG02511	AFR	ACB	HG02511	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3242336/HG02511.final.cram	population
+HG02922	AFR	ESN	HG02922	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3242482/HG02922.final.cram	population
+HG01936	AMR	PEL	HG01936	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3242003/HG01936.final.cram	population
+HG00638	AMR	PUR	HG00638	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3241727/HG00638.final.cram	population
+NA19657	AMR	MXL	NA19657	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239900/NA19657.final.cram	population
+HG01278	AMR	CLM	HG01278	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/additional_698_related/data/ERR3988867/HG01278.final.cram	population
+HG00632	EAS	CHS	HG00632	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3242520/HG00632.final.cram	population
+NA18643	EAS	CHB	NA18643	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239538/NA18643.final.cram	population
+NA18957	EAS	JPT	NA18957	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239561/NA18957.final.cram	population
+NA18618	EAS	CHB	NA18618	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239515/NA18618.final.cram	population
+HG01619	EUR	IBS	HG01619	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3241954/HG01619.final.cram	population
+NA20812	EUR	TSI	NA20812	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239880/NA20812.final.cram	population
+NA12813	EUR	CEU	NA12813	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3239327/NA12813.final.cram	population
+HG01631	EUR	IBS	HG01631	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3241962/HG01631.final.cram	population
+HG04056	SAS	ITU	HG04056	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3243119/HG04056.final.cram	population
+NA20911	SAS	GIH	NA20911	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3240044/NA20911.final.cram	population
+HG02685	SAS	PJL	HG02685	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3242410/HG02685.final.cram	population
+HG03595	SAS	BEB	HG03595	NYGC 30x	https://1000genomes.s3.amazonaws.com/1000G_2504_high_coverage/data/ERR3242839/HG03595.final.cram	population

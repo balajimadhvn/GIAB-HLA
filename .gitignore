@@ -1,0 +1,9 @@
+data/
+work/
+results*/
+.nextflow*
+*.crai
+*.bai
+.pytest_cache/
+__pycache__/
+*.Rhistory

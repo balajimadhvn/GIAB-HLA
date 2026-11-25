@@ -1,0 +1,4 @@
+name: hla-t1k
+channels: [conda-forge, bioconda]
+dependencies:
+  - t1k=1.0.10

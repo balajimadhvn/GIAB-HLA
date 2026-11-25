@@ -1,0 +1,137 @@
+---
+title: "HLA Typing from Whole-Genome Sequencing"
+subtitle: "T1K and OptiType vs published HLA types &middot; GIAB HG001 trio + 1000 Genomes"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    df_print: kable
+    self_contained: true
+params:
+  tables: "tables"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.width = 8, fig.height = 4, dpi = 120, dev = "png", fig.path = "figures/")
+suppressPackageStartupMessages({
+  library(readr); library(dplyr); library(tidyr); library(ggplot2); library(scales); library(knitr)
+})
+tb <- function(name) {                 # trio/agreement tables are absent when those samples were not run
+  f <- file.path(params$tables, name)
+  if (file.exists(f)) read_tsv(f, show_col_types = FALSE) else tibble()
+}
+acc <- tb("accuracy.tsv"); conc <- tb("concordance.tsv"); agree <- tb("agreement.tsv"); trio <- tb("trio.tsv")
+theme_set(theme_minimal(base_size = 12) + theme(panel.grid.minor = element_blank()))
+pct <- function(x, d = 1) ifelse(is.na(x), "", sprintf(paste0("%.", d, "f%%"), 100 * x))
+tool_cols <- c(T1K = "#1b9e77", OptiType = "#7570b3")
+```
+
+## Design
+
+* **Samples:** `r n_distinct(conc$sample)` genomes: GIAB HG001 (NA12878) from two independent data sets
+  (NYGC 30x and GIAB 300x HiSeq downsampled to 30x), both CEPH parents, and 4 more samples from each
+  1000 Genomes super-population (AFR, AMR, EAS, EUR, SAS).
+* **Reads:** only reads in the MHC (chr6:29.6-33.5 Mb) and on the HLA allele contigs are pulled from each
+  remote CRAM/BAM.
+* **Truth:** HLA types for the 1000 Genomes panel from Abi-Rached et al. 2018 (PLoS One 13:e0206512),
+  typed from exomes with PolyPheMe. Ambiguous truth alleles (e.g. `03:01/04`) accept any listed allele.
+* **Scoring:** for each locus the two called alleles are matched to the two truth alleles in whichever
+  order gives the most matches. Accuracy = correct alleles / alleles typed in the truth.
+
+## Accuracy
+
+```{r accuracy}
+acc %>%
+  filter(locus == "ALL") %>%
+  transmute(Tool = tool, Resolution = resolution, Correct = correct, Alleles = alleles,
+            Accuracy = sprintf("%s (%s-%s)", pct(accuracy), pct(ci_lo), pct(ci_hi))) %>%
+  kable()
+```
+
+```{r accuracy-plot, fig.height = 4.2}
+acc %>%
+  filter(locus != "ALL", resolution == "2-field") %>%
+  mutate(locus = factor(paste0("HLA-", locus), levels = paste0("HLA-", c("A", "B", "C", "DQB1", "DRB1")))) %>%
+  ggplot(aes(x = locus, y = accuracy, fill = tool)) +
+  geom_col(position = position_dodge(0.8), width = 0.75) +
+  geom_errorbar(aes(ymin = ci_lo, ymax = ci_hi), position = position_dodge(0.8), width = 0.25) +
+  scale_fill_manual(values = tool_cols) +
+  scale_y_continuous(labels = percent_format(), limits = c(0, 1)) +
+  labs(x = NULL, y = "2-field allele accuracy", fill = NULL,
+       title = "Accuracy by locus (95% Wilson CI)")
+```
+
+```{r locus-table}
+acc %>%
+  filter(locus != "ALL") %>%
+  select(tool, locus, resolution, accuracy, correct, alleles) %>%
+  pivot_wider(names_from = resolution, values_from = c(accuracy, correct)) %>%
+  transmute(Tool = tool, Locus = paste0("HLA-", locus), Alleles = alleles,
+            `1-field` = pct(`accuracy_1-field`), `2-field` = pct(`accuracy_2-field`)) %>%
+  kable()
+```
+
+## Accuracy by super-population
+
+```{r population-plot, fig.height = 3.6}
+conc %>%
+  filter(region != "") %>%
+  group_by(tool, region) %>%
+  summarise(accuracy = sum(match_2field) / (2 * n()), .groups = "drop") %>%
+  ggplot(aes(x = region, y = accuracy, fill = tool)) +
+  geom_col(position = position_dodge(0.8), width = 0.75) +
+  scale_fill_manual(values = tool_cols) +
+  scale_y_continuous(labels = percent_format(), limits = c(0, 1)) +
+  labs(x = NULL, y = "2-field accuracy", fill = NULL)
+```
+
+## T1K and OptiType agreement (class I)
+
+```{r agreement}
+agree %>%
+  group_by(locus) %>%
+  summarise(Samples = n(), `Both alleles agree` = pct(mean(shared_alleles == 2)),
+            `One allele agrees` = pct(mean(shared_alleles == 1)), `Neither` = pct(mean(shared_alleles == 0))) %>%
+  rename(Locus = locus) %>% kable()
+```
+
+## HG001 trio and data-set consistency
+
+A child inherits one HLA haplotype from each parent, so NA12878's alleles must be explainable by one allele from
+NA12891 and one from NA12892. This check needs no truth set.
+
+```{r trio}
+if (nrow(trio) == 0) cat("The trio was not part of this run.") else
+trio %>% transmute(Tool = tool, Locus = paste0("HLA-", locus), `NA12878` = child, `NA12891 (father)` = father,
+                   `NA12892 (mother)` = mother, Consistent = ifelse(consistent, "yes", "NO")) %>% kable()
+```
+
+```{r hg001-two-datasets}
+if (all(c("NA12878", "HG001_GIAB") %in% conc$sample))
+conc %>%
+  filter(sample %in% c("NA12878", "HG001_GIAB")) %>%
+  select(tool, locus, sample, called) %>%
+  pivot_wider(names_from = sample, values_from = called) %>%
+  rename(Tool = tool, Locus = locus, `NYGC 30x` = NA12878, `GIAB 300x -> 30x` = HG001_GIAB) %>%
+  kable()
+```
+
+## Errors
+
+```{r errors}
+conc %>% filter(match_2field < 2) %>%
+  transmute(Sample = sample, Region = region, Tool = tool, Locus = locus, Called = called,
+            Truth = truth, `Correct (2-field)` = match_2field, `Correct (1-field)` = match_1field) %>%
+  arrange(Tool, Locus, Sample) %>% kable()
+```
+
+## Limitations
+
+* The truth set was itself produced computationally (from exomes, IMGT/HLA 3.28). Some disagreements will
+  be errors in the truth, especially where the truth is homozygous or ambiguous.
+* `r n_distinct(conc$sample)` samples give wide confidence intervals per locus. A clinical HLA validation would
+  use more samples typed by an orthogonal lab method (SSO/SBT) and would report G-group resolution.
+* OptiType only types class I. Neither tool is used here for HLA-DPB1, -DQA1 or -DRB3/4/5, because the truth set
+  does not cover them.

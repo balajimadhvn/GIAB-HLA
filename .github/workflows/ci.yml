@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+
+      - name: Unit tests (Python)
+        run: python -m pytest -v
+
+      - name: Tool environments (T1K and OptiType pin conflicting samtools/Python versions)
+        run: |
+          micromamba create -y -q -f envs/t1k.yml
+          micromamba create -y -q -f envs/optitype.yml
+          echo "ENVS=$MAMBA_ROOT_PREFIX/envs" >> "$GITHUB_ENV"
+
+      - name: Pipeline test profile (5,831 real HG001 read pairs)
+        run: |
+          nextflow run main.nf -profile test -ansi-log false \
+            --t1k_env "$ENVS/hla-t1k" --optitype_env "$ENVS/hla-optitype" --base_env "$CONDA_PREFIX"
+
+      - name: Check outputs
+        run: |
+          test -s results_test/hla_report.html
+          cat results_test/tables/accuracy.tsv
+          # OptiType uses its full reference, so HG001 class I must be typed exactly
+          awk -F'\t' '$1=="OptiType" && $2=="ALL" && $3=="2-field" {exit !($4==6 && $5==6)}' results_test/tables/accuracy.tsv
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            results_test/hla_report.html
+            results_test/tables/

@@ -1,0 +1,21 @@
+name: giab-hla
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - nextflow=24.10.4
+  - openjdk=17
+  - samtools=1.21
+  - python=3.10
+  - pandas
+  - pyyaml
+  - pytest
+  - r-base=4.4
+  - r-ggplot2
+  - r-dplyr
+  - r-tidyr
+  - r-readr
+  - r-rmarkdown
+  - r-knitr
+  - r-scales
+  - pandoc
