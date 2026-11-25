@@ -30,7 +30,7 @@ jobs:
 
       - name: Pipeline test profile (5,831 real HG001 read pairs)
         run: |
-          nextflow run main.nf -profile test -ansi-log false \
+          nextflow run main.nf -profile test,ci -ansi-log false \
             --t1k_env "$ENVS/hla-t1k" --optitype_env "$ENVS/hla-optitype" --base_env "$CONDA_PREFIX"
 
       - name: Check outputs
